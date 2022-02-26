@@ -1,14 +1,21 @@
+/*
+* @Date: 2022-02-26 16:57:14
+* @LastEditors: Ecalose
+* @LastEditTime: 2022-02-26 23:51:57
+*/
 FROM python:3.8-buster
 
 RUN mkdir /app
 
-COPY ./*.txt ./*.py ./*.sh ./*.onnx /app/
+COPY ./*.txt ./*.py ./*.sh ./*.onnx ./*.conf /app/
 
-RUN cd /app &&
-    python3 -m pip install --upgrade pip -i https://pypi.douban.com/simple/ && pip3 install --no-cache-dir -r requirements.txt --extra-index-url https://pypi.douban.com/simple/ &&
-    rm -rf /tmp/* && rm -rf /root/.cache/* &&
-    apt-get --allow-releaseinfo-change update && apt install libgl1-mesa-glx nginx -y
+RUN python3 -m pip install --upgrade pip -i https://pypi.douban.com/simple/
+RUN pip3 install --no-cache-dir -r /app/requirements.txt
+RUN rm -rf /tmp/*
+RUN rm -rf /root/.cache/*
+RUN apt-get --allow-releaseinfo-change update
+RUN apt install libgl1-mesa-glx nginx -y
 RUN chmod +x /app/start.sh
 WORKDIR /app
 
-CMD start.sh
+ENTRYPOINT ["/bin/bash", "-C", "/app/start.sh"]
